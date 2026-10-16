@@ -5,7 +5,7 @@ import pandas as pd
 import folium
 
 from PIL import Image
-from streamlit_folium import folium_static
+from streamlit_folium import st_folium
 from datetime import datetime
 from pathlib import Path
 
@@ -13,7 +13,7 @@ from pathlib import Path
 APP_DIR = Path(__file__).resolve().parents[1]
 DATA_FILE = APP_DIR / "dataset" / "train.csv"
 
-st.set_page_config( page_title="Visao Empresa", page_icon="📈", layout='wide' )
+st.set_page_config(page_title="Visão Empresa", page_icon="📈", layout="wide")
 
 # ===========================
 # Function
@@ -51,7 +51,7 @@ def clean_code( df ):
 
 def order_metric( df, period='day' ):
     if period == 'day':
-        st.header( 'Orders by Day' )
+        st.header( 'Pedidos por dia' )
         df_aux = df.loc[:, ['ID', 'Order_Date']].groupby( 'Order_Date' ).count().reset_index()
         df_aux.columns = ['order_date', 'qtde_entregas']
 
@@ -59,20 +59,20 @@ def order_metric( df, period='day' ):
         fig = px.bar( df_aux, x='order_date', y='qtde_entregas',
                      labels={'order_date': 'data do pedido', 'qtde_entregas': 'quantidade de entregas'}
                      )
-        st.plotly_chart( fig, use_container_width=True )
+        st.plotly_chart( fig, width="stretch" )
 
     else:
-        st.header( 'Orders by Week' )
+        st.header( 'Pedidos por semana' )
         df_aux = df.loc[:, ['ID', 'week_of_year']].groupby( 'week_of_year' ).count().reset_index()
 
         # gráfico
         fig = px.bar( df_aux, x='week_of_year', y='ID',
                      labels={'week_of_year': 'Semana do Ano', 'ID': 'Quantidade de Entregas'} )
-        st.plotly_chart( fig, use_container_width=True )
+        st.plotly_chart( fig, width="stretch" )
 
 
 def order_by_deliver( df ):
-    st.header( 'Week order share' )
+    st.header( 'Média semanal de pedidos por entregador' )
     df_aux1 = df.loc[:, ['ID', 'week_of_year']].groupby( 'week_of_year' ).count().reset_index()
     df_aux2 = df.loc[:, ['Delivery_person_ID', 'week_of_year']].groupby( 'week_of_year').nunique().reset_index()
     df_aux = pd.merge( df_aux1, df_aux2, how='inner' )
@@ -81,26 +81,26 @@ def order_by_deliver( df ):
 
     # gráfico
     fig = px.line( df_aux, x='week_of_year', y='order_by_delivery' )
-    st.plotly_chart( fig, use_container_width=True )
+    st.plotly_chart( fig, width="stretch" )
 
 
 def order_share_by_traffic( df ):
-    st.header( 'Traffic Order Share' )
+    st.header( 'Distribuição de pedidos por trânsito' )
     df_aux = df.loc[:, ['ID', 'Road_traffic_density']].groupby( 'Road_traffic_density' ).count().reset_index()
     df_aux['perc_ID'] = 100 * ( df_aux['ID'] / df_aux['ID'].sum() )
 
     # gráfico
     fig = px.pie( df_aux, values='perc_ID', names='Road_traffic_density' )
-    st.plotly_chart( fig, use_container_width=True )
+    st.plotly_chart( fig, width="stretch" )
 
 
 def order_by_city_vehicle( df ):
-    st.header( 'Type of Vehicle by City' )
+    st.header( 'Tipos de veículo por cidade' )
     df_aux = df[['ID', 'Type_of_vehicle', 'City', ]].groupby( ['City', 'Type_of_vehicle'] ).count().reset_index()
 
     # grafico
     fig = px.scatter( df_aux, x='City', y='Type_of_vehicle', size='ID', color='City' )
-    st.plotly_chart( fig, use_container_width=True )
+    st.plotly_chart( fig, width="stretch" )
 
 
 def density_traffic_map( df ):
@@ -114,7 +114,7 @@ def density_traffic_map( df ):
                        location_info['Delivery_location_longitude']],
                        popup=location_info[['City', 'Road_traffic_density']] ).add_to( map_ )
 
-    folium_static( map_, width=1024 , height=600 )
+    st_folium(map_, width=1024, height=600, returned_objects=[])
 
 
 # ===========================
@@ -129,7 +129,7 @@ image = Image.open(APP_DIR / "logo.png")
 st.sidebar.image( image, width=120 )
 
 st.sidebar.markdown( "# Curry Company" )
-st.sidebar.markdown( "## Fastest Delivery in Town" )
+st.sidebar.markdown( "## Entrega rápida, decisões melhores" )
 st.sidebar.markdown( """---""" )
 
 st.sidebar.markdown( "## Selecione um data limite" )

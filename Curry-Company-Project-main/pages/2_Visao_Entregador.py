@@ -9,6 +9,8 @@ from pathlib import Path
 APP_DIR = Path(__file__).resolve().parents[1]
 DATA_FILE = APP_DIR / "dataset" / "train.csv"
 
+st.set_page_config(page_title="Visão Entregadores", page_icon="🛵", layout="wide")
+
 # ===========================
 # Function
 # ===========================
@@ -113,7 +115,7 @@ image = Image.open(APP_DIR / "logo.png")
 st.sidebar.image( image, width=120 )
 
 st.sidebar.markdown( "# Curry Company" )
-st.sidebar.markdown( "## Fastest Delivery in Town" )
+st.sidebar.markdown( "## Entrega rápida, decisões melhores" )
 st.sidebar.markdown( """---""" )
 
 st.sidebar.markdown( "## Selecione um data limite" )
@@ -153,7 +155,7 @@ st.markdown("# Marketplace - Entregadores")
 # Layout
 # ===========================
 # Tabs
-tab1, tab2 = st.tabs( ['Visão Gerencial', '_'] )
+tab1 = st.tabs(['Visão Gerencial'])[0]
 
 
 # A maior idade dos entregadores
@@ -172,43 +174,43 @@ df_avg_ratings_per_deliver = ( df.loc[:, ['Delivery_person_Ratings', 'Delivery_p
 with tab1:
 
     with st.container():
-        st.title("Overall Metrics")
+        st.title("Indicadores gerais")
         col1, col2, col3, col4 = st.columns( 4, gap="large" )
         # Display Number - 
-        col1.metric("Older Delivery Age", older_age )
-        col2.metric("Younger Delivery Age", younger_age )
+        col1.metric("Maior idade", older_age )
+        col2.metric("Menor idade", younger_age )
         
-        col3.metric("Best Vehicle Condition", best_vehicle )
-        col4.metric("Worst Vehicle Condition", worst_vehicle )
+        col3.metric("Melhor condição do veículo", best_vehicle )
+        col4.metric("Pior condição do veículo", worst_vehicle )
 
     with st.container():
         st.markdown("""---""")
-        st.title("Ratings")
+        st.title("Avaliações")
 
         col1, col2 = st.columns( 2 )
 
         with col1:
-            st.subheader( "Average Ratings per Deliver" )
+            st.subheader( "Avaliação média por entregador" )
             st.dataframe( df_avg_ratings_per_deliver )
 
         with col2:
-            st.subheader( "Average Ratings per Traffic" )
+            st.subheader( "Avaliação média por trânsito" )
             st.dataframe( get_avg_rating_by_traffic( df ) )
 
-            st.subheader( "Average Ratings per Weather" )
+            st.subheader( "Avaliação média por clima" )
             st.dataframe( get_avg_rating_by_weather( df ) )
 
     with st.container():
         st.markdown("""---""")
-        st.title( 'Speed of Delivery' )
+        st.title( 'Velocidade das entregas' )
 
         col1, col2 = st.columns( 2 )
 
         with col1:
-            st.subheader( 'Faster Delivery by City' )
+            st.subheader( 'Entregadores mais rápidos por cidade' )
             st.dataframe( get_faster_delivery( df ) )
 
         with col2:
-            st.subheader( 'Slower Delivery by City' )
+            st.subheader( 'Entregadores mais lentos por cidade' )
             st.dataframe( get_slower_delivery( df ) )
 

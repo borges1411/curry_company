@@ -14,6 +14,8 @@ from pathlib import Path
 APP_DIR = Path(__file__).resolve().parents[1]
 DATA_FILE = APP_DIR / "dataset" / "train.csv"
 
+st.set_page_config(page_title="Visão Restaurantes", page_icon="🍽️", layout="wide")
+
 # ===========================
 # Function
 # ===========================
@@ -71,7 +73,7 @@ def get_avg_time_by_city( df ):
 
     fig.update_layout(barmode='group') 
     fig.update_layout( margin=dict(l=40, r=40, t=40, b=40) )
-    st.plotly_chart( fig, use_container_width=True  )
+    st.plotly_chart( fig, width="stretch" )
 
 
 
@@ -86,7 +88,7 @@ def get_distribution_distance( df ):
     # pull is given as a fraction of the pie radius
     fig = go.Figure( data=[ go.Pie( labels=df_aux['City'], values=df_aux['distance'], pull=[0, 0.1, 0])])
     fig.update_layout( margin=dict(l=40, r=40, t=40, b=40) )
-    st.plotly_chart( fig, use_container_width=True )
+    st.plotly_chart( fig, width="stretch" )
 
 
 def get_avg_time_by_order( df ):
@@ -134,7 +136,7 @@ def get_delivery_time_by_city( df ):
 
     fig.update_layout( margin=dict(l=40, r=40, t=40, b=40) )
 
-    st.plotly_chart( fig, use_container_width=True )
+    st.plotly_chart( fig, width="stretch" )
 
 # ===========================
 # Título
@@ -148,7 +150,7 @@ image = Image.open(APP_DIR / "logo.png")
 st.sidebar.image( image, width=120 )
 
 st.sidebar.markdown( "# Curry Company" )
-st.sidebar.markdown( "## Fastest Delivery in Town" )
+st.sidebar.markdown( "## Entrega rápida, decisões melhores" )
 
 st.sidebar.markdown( """---""" )
 st.sidebar.markdown( "## Selecione um data limite" )
@@ -191,7 +193,7 @@ df = df.loc[df['City'].isin( city_options ), :]
 # Layout
 # ===========================
 # Tabs
-tab1, tab2 = st.tabs( ['Visão Gerencial', '_'] )
+tab1 = st.tabs(['Visão Gerencial'])[0]
 
 
 # Quantidade de entregadores únicos
@@ -199,25 +201,25 @@ delivery_unique = len( df.loc[:, 'Delivery_person_ID'].unique() )
 
 with tab1:
     with st.container():
-        st.title("Overall Metrics")
+        st.title("Indicadores gerais")
         col1, col2, col3, col4, col5, col6 = st.columns( 6 )
 
         # Display Number - 
-        col1.metric( "Unique delivery", delivery_unique )
-        col2.metric( "Average Distance (KM)", get_avg_distance( df ) )
+        col1.metric( "Entregadores únicos", delivery_unique )
+        col2.metric( "Distância média (km)", get_avg_distance( df ) )
 
         avg_time, std_time = get_delivery_time_festival( df, festival=True )
-        col3.metric( "Avg Delivery Time Festival", avg_time  )
-        col4.metric( "Std Delivery Time Festival", std_time  )
+        col3.metric( "Tempo médio com festival", avg_time  )
+        col4.metric( "Desvio padrão com festival", std_time  )
 
         avg_time, std_time = get_delivery_time_festival( df, festival=False )
-        col5.metric( "Avg Delivery Time No Festival", avg_time  )
-        col6.metric( "Std Delivery Time No Festival", std_time  )
+        col5.metric( "Tempo médio sem festival", avg_time  )
+        col6.metric( "Desvio padrão sem festival", std_time  )
 
 
     with st.container():
         st.markdown("""---""")
-        st.title( "Delivery Average Time by City" )
+        st.title( "Tempo médio de entrega por cidade" )
         get_avg_time_by_city( df )
 
     with st.container():
@@ -225,14 +227,14 @@ with tab1:
         col1, col2 = st.columns( 2 )
 
         with col1:
-            st.subheader( "Distribuition of Average Time by City" )
+            st.subheader( "Distribuição da distância média por cidade" )
             get_distribution_distance( df )
 
         with col2:
-            st.subheader( "Average Time by Order Type" )
+            st.subheader( "Tempo médio por tipo de pedido" )
             get_avg_time_by_order( df )
 
     with st.container():
         st.markdown("""---""")
-        st.subheader( "Average Time by City" )
+        st.subheader( "Tempo médio por cidade e trânsito" )
         get_delivery_time_by_city( df )
