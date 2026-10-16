@@ -1,12 +1,17 @@
 import streamlit as st
 from PIL import Image
+from pathlib import Path
+
+
+APP_DIR = Path(__file__).resolve().parent
 
 st.set_page_config(
-    page_title="Home",
-    page_icon="👋",
+    page_title="Curry Company | Dashboard",
+    page_icon="📊",
+    layout="wide",
 )
 
-image = Image.open( 'logo.png' )
+image = Image.open(APP_DIR / "logo.png")
 st.sidebar.image( image, width=120 )
 
 
@@ -14,21 +19,19 @@ st.sidebar.markdown( "# Curry Company" )
 st.sidebar.markdown( "## Fastest Delivery in Town" )
 st.sidebar.markdown( """---""" )
 
-st.write("# Curry Company Growth Dashboard")
+st.write("# Curry Company — Growth Dashboard")
 
 st.markdown(
     """
-    Growth Dashboard foi construído para acompanhar as métricas de crescimento dos Entregadores e Restaurantes.
-    ### Como utilizar esse Growth Dashboard?
-    - Visão Empresa: 
-        - Visão Gerencial: Métricas gerais de comportamento.
-        - Visão Tática: Indicadores semanais de crescimento.
-        - Visão Geográfica: Insights de geolocalização.
-    - Visão Entregador: 
-        - Acompanhamento dos indicadores semanais de crescimento
-    - Visão Restaurante:
-        - Indicadores semanais de crescimento dos restaurantes
-    ### Ask for Help
-    - Time de Data Science no Discord
-        - @meigarom
+    Painel analítico desenvolvido para acompanhar indicadores operacionais de um
+    marketplace de entregas. A navegação está organizada em três perspectivas:
+
+    - **Visão Empresa:** volume de pedidos, evolução semanal, perfil de trânsito e distribuição geográfica.
+    - **Visão Entregadores:** idade, avaliações, condições dos veículos e desempenho por cidade.
+    - **Visão Restaurantes:** distâncias, tempos de entrega e impactos de trânsito, cidade e festivais.
+
+    Use o menu lateral para escolher a visão e ajustar os filtros disponíveis.
+
+    > Projeto demonstrativo de portfólio. Os dados são utilizados exclusivamente
+    > para fins educacionais e não representam uma operação real.
 """ )
