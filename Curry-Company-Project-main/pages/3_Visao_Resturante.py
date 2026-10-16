@@ -4,13 +4,15 @@ import plotly.graph_objects as go
 
 import pandas as pd
 import numpy as np
-import folium
-
-import matplotlib.pyplot as plt
 
 from haversine import haversine
-from streamlit_folium import folium_static
 from PIL import Image
+from datetime import datetime
+from pathlib import Path
+
+
+APP_DIR = Path(__file__).resolve().parents[1]
+DATA_FILE = APP_DIR / "dataset" / "train.csv"
 
 # ===========================
 # Function
@@ -69,7 +71,7 @@ def get_avg_time_by_city( df ):
 
     fig.update_layout(barmode='group') 
     fig.update_layout( margin=dict(l=40, r=40, t=40, b=40) )
-    st.plotly_chart( fig, user_container_width=True  )
+    st.plotly_chart( fig, use_container_width=True  )
 
 
 
@@ -84,7 +86,7 @@ def get_distribution_distance( df ):
     # pull is given as a fraction of the pie radius
     fig = go.Figure( data=[ go.Pie( labels=df_aux['City'], values=df_aux['distance'], pull=[0, 0.1, 0])])
     fig.update_layout( margin=dict(l=40, r=40, t=40, b=40) )
-    st.plotly_chart( fig, user_container_width=True )
+    st.plotly_chart( fig, use_container_width=True )
 
 
 def get_avg_time_by_order( df ):
@@ -106,12 +108,14 @@ def get_delivery_time_festival( df, festival=True ):
     df_aux.columns = ['avg_time', 'std_time']
     df_aux = df_aux.reset_index()
 
-    if festival == True:
-        avg_time = np.round( df_aux.loc[df_aux['Festival'] == 'Yes', 'avg_time'], 2 )
-        std_time = np.round( df_aux.loc[df_aux['Festival'] == 'Yes', 'std_time'], 2 )
-    else:
-        avg_time = np.round( df_aux.loc[df_aux['Festival'] == 'No', 'avg_time'], 2 )
-        std_time = np.round( df_aux.loc[df_aux['Festival'] == 'No', 'std_time'], 2 )
+    festival_value = 'Yes' if festival else 'No'
+    result = df_aux.loc[df_aux['Festival'] == festival_value, ['avg_time', 'std_time']]
+
+    if result.empty:
+        return 0.0, 0.0
+
+    avg_time = np.round(result['avg_time'].iloc[0], 2)
+    std_time = np.round(result['std_time'].iloc[0], 2)
 
     return avg_time, std_time
 
@@ -130,7 +134,7 @@ def get_delivery_time_by_city( df ):
 
     fig.update_layout( margin=dict(l=40, r=40, t=40, b=40) )
 
-    st.plotly_chart( fig, container_width=True )
+    st.plotly_chart( fig, use_container_width=True )
 
 # ===========================
 # Título
@@ -140,7 +144,7 @@ st.header("Marketplace - Visão Restaurantes")  ## Main Title
 # ===========================
 # Filtros - Side bar
 # ===========================
-image = Image.open( 'logo.png' )
+image = Image.open(APP_DIR / "logo.png")
 st.sidebar.image( image, width=120 )
 
 st.sidebar.markdown( "# Curry Company" )
@@ -150,9 +154,9 @@ st.sidebar.markdown( """---""" )
 st.sidebar.markdown( "## Selecione um data limite" )
 date_slider = st.sidebar.slider(
         "Até qual valor?",
-        value = pd.datetime( 2022, 4, 13 ),
-        min_value=pd.datetime( 2022, 2, 11),
-        max_value=pd.datetime( 2022, 5, 6 ), 
+        value = datetime( 2022, 4, 6 ),
+        min_value=datetime( 2022, 2, 11),
+        max_value=datetime( 2022, 4, 6 ),
         format="DD-MM-YYYY"
     )
 
@@ -161,7 +165,7 @@ st.sidebar.markdown( """---""" )
 st.sidebar.markdown( "## Selecione uma condição de trânsito" )
 traffic_options = st.sidebar.multiselect(
         'Quais a condições do trânsito?', ['Low', 'Medium', 'High', 'Jam'], 
-        default=['Low', 'Medium', 'High', 'Low'] )
+        default=['Low', 'Medium', 'High', 'Jam'] )
 
 
 st.sidebar.markdown( """---""" )
@@ -173,8 +177,7 @@ city_options = st.sidebar.multiselect(
 # ETL
 # ===========================
 # Extracao
-file_path = 'dataset/'
-df = pd.read_csv( file_path + 'train.csv' )
+df = pd.read_csv(DATA_FILE)
 
 # Limpeza
 df = clean_code( df )
@@ -191,7 +194,7 @@ df = df.loc[df['City'].isin( city_options ), :]
 tab1, tab2 = st.tabs( ['Visão Gerencial', '_'] )
 
 
-# A maior idade dos entregadomarkdownres
+# Quantidade de entregadores únicos
 delivery_unique = len( df.loc[:, 'Delivery_person_ID'].unique() )
 
 with tab1:

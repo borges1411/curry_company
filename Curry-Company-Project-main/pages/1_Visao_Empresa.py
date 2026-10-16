@@ -2,14 +2,16 @@ import streamlit as st
 import plotly.express as px
 
 import pandas as pd
-import numpy as np
 import folium
-
-import matplotlib.pyplot as plt
 
 from PIL import Image
 from streamlit_folium import folium_static
 from datetime import datetime
+from pathlib import Path
+
+
+APP_DIR = Path(__file__).resolve().parents[1]
+DATA_FILE = APP_DIR / "dataset" / "train.csv"
 
 st.set_page_config( page_title="Visao Empresa", page_icon="📈", layout='wide' )
 
@@ -89,7 +91,7 @@ def order_share_by_traffic( df ):
 
     # gráfico
     fig = px.pie( df_aux, values='perc_ID', names='Road_traffic_density' )
-    st.plotly_chart( fig, user_container_width=True )
+    st.plotly_chart( fig, use_container_width=True )
 
 
 def order_by_city_vehicle( df ):
@@ -98,7 +100,7 @@ def order_by_city_vehicle( df ):
 
     # grafico
     fig = px.scatter( df_aux, x='City', y='Type_of_vehicle', size='ID', color='City' )
-    st.plotly_chart( fig, user_container_width=True )
+    st.plotly_chart( fig, use_container_width=True )
 
 
 def density_traffic_map( df ):
@@ -123,7 +125,7 @@ st.header("Marketplace - Visão Empresa")   ## Main Title
 # ===========================
 # Filtros - Side bar
 # ===========================
-image = Image.open( 'logo.png' )
+image = Image.open(APP_DIR / "logo.png")
 st.sidebar.image( image, width=120 )
 
 st.sidebar.markdown( "# Curry Company" )
@@ -133,9 +135,9 @@ st.sidebar.markdown( """---""" )
 st.sidebar.markdown( "## Selecione um data limite" )
 date_slider = st.sidebar.slider(
         "Até qual valor?",
-        value=pd.datetime( 2022, 4, 13 ),
-        min_value=pd.datetime( 2022, 2, 11),
-        max_value=pd.datetime( 2022, 5, 6 ), 
+        value=datetime( 2022, 4, 6 ),
+        min_value=datetime( 2022, 2, 11),
+        max_value=datetime( 2022, 4, 6 ),
         format="DD-MM-YYYY"
     )
 st.sidebar.markdown( """---""" )
@@ -143,14 +145,13 @@ st.sidebar.markdown( """---""" )
 st.sidebar.markdown( "## Selecione uma condição de trânsito" )
 traffic_options = st.sidebar.multiselect(
         'Quais a condições do trânsito?',
-        ['Low', 'Medium', 'High', 'Jam'], default='Medium' )
+        ['Low', 'Medium', 'High', 'Jam'], default=['Medium'] )
 
 # ===========================
 # ETL
 # ===========================
 # Extracao
-file_path = 'dataset/'
-df = pd.read_csv( file_path + 'train.csv' )
+df = pd.read_csv(DATA_FILE)
 
 # Limpeza
 df = clean_code( df )
