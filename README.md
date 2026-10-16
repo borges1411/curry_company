@@ -6,9 +6,9 @@ Dashboard interativo para análise operacional de um marketplace de entregas. O 
 
 ## Demonstração
 
-[Acessar a URL atual do dashboard](https://project-curry-company.streamlit.app/)
+[Acessar o dashboard público](https://curry-company-borges1411.streamlit.app/)
 
-**Status verificado em 16/10/2026:** a URL responde, mas redireciona para a tela de autenticação do Streamlit. Antes da divulgação no portfólio, a publicação precisa ser revisada para permitir acesso público.
+**Status verificado em 16/10/2026:** aplicação publicada, acessível sem autenticação e conectada à branch principal deste repositório.
 
 ## Objetivo de negócio
 
@@ -42,7 +42,7 @@ Curry-Company-Project-main/
 ├── pages/
 │   ├── 1_Visao_Empresa.py
 │   ├── 2_Visao_Entregador.py
-│   └── 3_Visao_Resturante.py
+│   └── 3_Visao_Restaurante.py
 ├── dataset/train.csv
 ├── logo.png
 └── requirements.txt
